@@ -1,0 +1,11 @@
+---
+- name: Start flannel
+  service: name=kubelet state=started
+  tags: flannel
+
+- name: Restart flannel
+  service: name=kubelet state=restarted
+  tags: flannel
+
+- name: Config docker
+  set_fact: DOCKER_OPTS['BIP']="--bip=172.17.0.1/24"

@@ -1,0 +1,15 @@
+---
+- name: Create etcd host path storage
+  file: path={{ ETCD_STORAGE_PATH }} state=directory owner=root group=root mode=0777
+  when: ETCD_STORAGE_TYPE == 'hostPath'
+
+- name: Copy etcd docker image
+  copy: src={{ ETCD_IMAGE_FILE }} dest="{{ IMAGE_PATH }}/{{ ETCD_IMAGE_FILE }}" force=yes owner=root group=root mode=0644
+  notify: Load etcd image
+  when: ETCD_IMAGE_FILE | default("") != ""
+
+- meta: flush_handlers
+
+- name: Install etcd static pod
+  template: src=etcd.yml.j2 dest={{ KUBELET_CONFIG_PATH }}/etcd.yaml owner=root group=root mode=0644
+  when: ETCD_RUNNING_MODE == 'StaticPod' and KUBELET_CONFIG_PATH

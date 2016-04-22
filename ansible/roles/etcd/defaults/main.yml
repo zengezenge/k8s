@@ -1,0 +1,17 @@
+---
+HOST_IP: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+ETCD_RUNNING_MODE: 'StaticPod'
+ETCD_NAME: "{{ inventory_hostname }}"
+ETCD_IMAGE: 'gcr.io/google_containers/etcd:2.2.1'
+ETCD_IMAGE_FILE: 'gcr.io~google_containers~etcd_2.2.1.tar'
+ETCD_RESTARTPOLICY: 'Always'
+RESOURCE_LIMIT_CPU: '100m'
+RESOURCE_LIMIT_MEMORY: '50Mi'
+RESOURCE_REQUIRE_CPU: '100m'
+RESOURCE_REQUIRE_MEMORY: '50Mi'
+ETCD_CLUSTER_TOKEN: 'etcd-cluster'
+ETCD_STORAGE_TYPE: 'hostPath'
+ETCD_STORAGE_PATH: '/var/etcd/data'
+ETCD_CLUSTER_STATE: 'new'
+IMAGE_PATH: '/vagrant/images'
+ETCD_INITIAL_CLUSTER: "etcd1=http://192.168.0.140:2380,etcd2=http://192.168.0.141:2380,etcd3=http://192.168.0.142:2380"

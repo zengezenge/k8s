@@ -1,0 +1,32 @@
+---
+- name: Install kubelet
+  copy: src=kubelet dest=/usr/bin/kubelet owner=root group=root mode=0755
+
+- name: Install kubelet default config
+  template: src=kubelet.j2 dest=/etc/default/kubelet owner=root group=root mode=0644
+  tags: kubelet
+  notify: restart kubelet service
+
+- name: Install kubelet ini
+  template: src=kubelet.conf.j2 dest=/etc/init/kubelet.conf owner=root group=root mode=0644
+
+- name: Install kubelet init.d
+  template: src=kubelet.sh.j2 dest=/etc/init.d/kubelet owner=root group=root mode=0644
+
+- name: Create kubelet log folder
+  file: path={{ KUBELET_LOGPATH }} state=directory owner=root group=root mode=0777
+
+- name: Create kubelet config folder
+  file: path={{ KUBELET_CONFIG_PATH }} state=directory owner=root group=root mode=0777
+
+- name: Start kubelet service
+  service: name=kubelet state=started
+
+- name: Create image file storage
+  file: path={{ IMAGE_PATH }} state=directory owner=root group=root mode=0777
+
+- name: Copy docker image
+  copy: src={{ item }} dest={{ IMAGE_PATH }}/{{ item }} force=yes owner=root group=root mode=0644
+  with_items:
+    - '{{ KUBELET_PAUSE_IMAGE_FILE }}'
+  notify: Load pause docker image

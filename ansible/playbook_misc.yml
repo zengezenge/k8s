@@ -1,0 +1,15 @@
+---
+- name: Install misc
+  hosts: misc
+  remote_user: vagrant
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Install software-properties-common
+      apt: name=software-properties-common update_cache=yes cache_valid_time=3600 state=present
+
+    - name: Install docker apt repository
+      apt_repository: repo="ppa:ansible/ansible" state=present
+
+    - name: Install ansible
+      apt: name=ansible update_cache=yes cache_valid_time=3600 state=present

@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ inventory_hostname }}
+spec:
+  restartPolicy: {{ MASTER_RESTARTPOLICY }}
+  volumes:
+    - name: certs
+      hostPath:
+        path: '{{ MASTER_CERT_PATH }}'
+    - name: auths
+      hostPath:
+        path: '{{ MASTER_AUTH_PATH }}'
+  containers:
+    - name: "kube-apiserver"
+      image: '{{ MASTER_APISERVER_IMAGE }}'
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - mountPath: /certs
+          name: certs
+          readOnly: true
+        - mountPath: /auths
+          name: auths
+          readOnly: true
+      command:
+        - kube-apiserver
+        - --insecure-bind-address
+        - '0.0.0.0'
+        - --insecure-port
+        - '8080'
+        - --bind-address
+        - '0.0.0.0'
+        - --secure-port
+        - '6443'
+        - --advertise-address
+        - '127.0.0.1'
+        - --service-cluster-ip-range
+        - '192.168.0.0/16'
+        - --etcd-servers
+        - '{{ MASTER_ETCD_SERVERS }}'
+        - --insecure-port
+        - '{{ MASTER_API_PORT }}'
+        - --external-hostname
+        - '{{ inventory_hostname }}'
+        - --tls-cert-file
+        - '/certs/certs/server.crt'
+        - --tls-private-key-file
+        - '/certs/private/server.key'
+        - --kubelet-certificate-authority
+        - '/certs/certs/ca.crt'
+        - --kubelet-client-certificate
+        - '/certs/certs/kubelet.crt'
+        - --kubelet-client-key
+        - '/certs/private/kubelet.key'
+        - --kubelet-https
+        - 'true'
+        - --admission-control
+        - "NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"
+        - --authorization-mode
+        - 'AlwaysAllow'
+#        - --authorization-policy-file
+#        - '/auths/abac.json'
+        - --token-auth-file
+        - '/auths/token.csv'
+        - --basic-auth-file
+        - '/auths/basic_authentication.csv'
+        - --client-ca-file
+        - '/certs/certs/ca.crt'
+        - --service-account-key-file
+        - '/certs/certs/server.crt'
+        - --service-account-lookup
+        - 'true'
+      ports:
+        - containerPort: 4001
+          hostPort: 4001
+        - containerPort: 6443
+          hostPort: 6443
+        - containerPort: 2379
+          hostPort: 2379
+        - containerPort: 2380
+          hostPort: 2380
+        - containerPort: 8080
+          hostPort: 8080
+    - name: "kube-controller-manager"
+      image: '{{ MASTER_CONTROLLER_MANAGER_IMAGE }}'
+      volumeMounts:
+        - mountPath: /certs
+          name: certs
+          readOnly: true
+      imagePullPolicy: IfNotPresent
+      command:
+        - kube-controller-manager
+        - --master
+        - '127.0.0.1:{{ MASTER_API_PORT }}'
+        - --service-account-private-key-file
+        - '/certs/certs/server.crt'
+    - name: "kube-scheduler"
+      image: '{{ MASTER_SCHEDULER_IMAGE }}'
+      imagePullPolicy: IfNotPresent
+      command:
+        - kube-scheduler
+        - --master
+        - '127.0.0.1:{{ MASTER_API_PORT }}'

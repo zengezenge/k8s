@@ -1,0 +1,7 @@
+---
+- name: Load docker image
+  shell: docker load -i "{{ IMAGE_PATH }}/{{ item }}"
+  with_items:
+    - '{{ MASTER_APISERVER_IMAGE_FILE }}'
+    - '{{ MASTER_CONTROLLER_MANAGER_IMAGE_FILE }}'
+    - '{{ MASTER_SCHEDULER_IMAGE_FILE }}'

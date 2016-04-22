@@ -1,0 +1,4 @@
+---
+MASTER_APISERVER_IMAGE: 'gcr.io/google_containers/kube-apiserver:e68c6af15d4672feef7022e94ee4d9af'
+MASTER_CONTROLLER_MANAGER_IMAGE: 'gcr.io/google_containers/kube-controller-manager:b9107c794e0564bf11719dc554213f7b'
+MASTER_SCHEDULER_IMAGE: 'gcr.io/google_containers/kube-scheduler:903b34d5ed7367ec4dddf846675613c9'

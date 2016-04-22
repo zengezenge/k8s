@@ -1,0 +1,10 @@
+---
+PROXY_IMAGE_FILE: 'kube-proxy.tar'
+PROXY_IMAGE: 'gcr.io/google_containers/kube-proxy:6a3c7bde4710fbeb04cee371779c437b'
+IMAGE_PATH: '/vagrant/images'
+PROXY_RUNNING_MODE: 'Service'
+PROXY_RESTARTPOLICY: 'Always'
+HOST_IP: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+MASTER_API_PORT: 8080
+KUBE_PROXY_OPTS:
+  API_MASTER: '--master=192.168.0.150:{{ MASTER_API_PORT }}'

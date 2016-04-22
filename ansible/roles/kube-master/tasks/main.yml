@@ -1,0 +1,40 @@
+---
+- name: Load image vars
+  include_vars: 'images_{{ MASTER_VERSION }}.yml'
+
+- name: Create image file storage
+  file: path={{ IMAGE_PATH }} state=directory owner=root group=root mode=0777
+
+- name: Copy docker image
+  copy: src={{ item }} dest={{ IMAGE_PATH }}/{{ item }} force=yes owner=root group=root mode=0644
+  with_items:
+    - '{{ MASTER_APISERVER_IMAGE_FILE }}'
+    - '{{ MASTER_CONTROLLER_MANAGER_IMAGE_FILE }}'
+    - '{{ MASTER_SCHEDULER_IMAGE_FILE }}'
+  notify: Load docker image
+
+- meta: flush_handlers
+
+- name: Remove cert file storage
+  file: path={{ MASTER_CERT_PATH }} state=absent
+
+- name: Create cert file storage
+  file: path={{ MASTER_CERT_PATH }} state=directory owner=root group=root mode=0655
+
+- name: Create auths file storage
+  file: path={{ MASTER_AUTH_PATH }} state=directory owner=root group=root mode=0655
+
+- name: Copy auths file
+  copy: src={{ item }} dest={{ MASTER_AUTH_PATH }}/{{ item }} force=yes owner=root group=root mode=0644
+  with_items:
+    - 'token.csv'
+    - 'basic_authentication.csv'
+    - 'abac.json'
+
+- name: Create self-signed SSL cert
+  command: openssl req -new -nodes -x509 -subj "/C=US/ST=Oregon/L=Portland/O=IT/CN={{ HOST_IP }}" -days 3650 -keyout {{ MASTER_CERT_PATH }}/{{ MASTER_CERT_NAME }}.key -out {{ MASTER_CERT_PATH }}/{{ MASTER_CERT_NAME }}.crt
+
+- name: Install master static pod
+  template: src=master.yml.j2 dest={{ KUBELET_CONFIG_PATH }}/master.yaml owner=root group=root mode=0644
+  when: MASTER_RUNNING_MODE == 'StaticPod' and ( KUBELET_CONFIG_PATH | default("") != "" )
+

@@ -1,0 +1,8 @@
+---
+- name: restart kubelet service
+  service: name=kubelet state=restarted
+
+- name: Load pause docker image
+  shell: docker load -i "{{ IMAGE_PATH }}/{{ item }}"
+  with_items:
+    - '{{ KUBELET_PAUSE_IMAGE_FILE }}'

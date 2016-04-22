@@ -1,0 +1,3 @@
+{"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"zhangsan", "namespace": "*","resource": "pods","apiGroup": "*","readonly": true, "nonResourcePath": "*" }}
+{"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"admin", "namespace": "*","resource": "*","apiGroup": "*", "nonResourcePath": "*" }}
+{"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"lisi", "namespace": "*","resource": "*","apiGroup": "*","readonly": true }}

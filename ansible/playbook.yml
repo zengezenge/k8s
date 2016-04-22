@@ -1,0 +1,55 @@
+---
+- name: Install etcd
+  hosts: etcd
+  remote_user: vagrant
+  become: yes
+  become_method: sudo
+  roles:
+    - docker
+    - role: kube-kubelet
+      KUBELET_OPTS:
+        LOG-DIR: '--log-dir={{ KUBELET_LOGPATH }}'
+        CONFIG: '--config={{ KUBELET_CONFIG_PATH }}/'
+    - etcd
+
+- name: Install master
+  hosts: master
+  remote_user: vagrant
+  become: yes
+  become_method: sudo
+  vars:
+    MASTER_VERSION: '1.2'
+    KUBELET_OPTS:
+      LOG-DIR: '--log-dir={{ KUBELET_LOGPATH }}'
+      CONFIG: '--config={{ KUBELET_CONFIG_PATH }}/'
+  roles:
+    - role: flannel
+    - role: docker
+      DOCKER_OPTS:
+        BIP: "--bip={{ FLANNEL_SUBNET }}"
+        MTU: "--mtu={{ FLANNEL_MTU }}"
+    - role: kube-kubelet
+    - kube-master
+
+- name: Install minion
+  hosts: slave
+  remote_user: vagrant
+  become: yes
+  become_method: sudo
+  roles:
+    - role: flannel
+    - role: docker
+      DOCKER_OPTS:
+        BIP: "--bip={{ FLANNEL_SUBNET }}"
+        MTU: "--mtu={{ FLANNEL_MƒTU }}"
+    - role: kube-proxy
+      KUBE_PROXY_OPTS:
+        API_MASTER: '--master=192.168.0.150:8080'
+        BIND_ADDRESS: '--bind-address={{ HOST_IP }}'
+        PROXY_MODE: '--proxy-mode=iptables'
+    - role: kube-kubelet
+      KUBELET_OPTS:
+        API-MASTER: '--api-servers=192.168.0.150:8080'
+        LOG-DIR: '--log-dir={{ KUBELET_LOGPATH }}'
+        ADDRESS: '--address={{ HOST_IP }}'
+        NODE_IP: '--node-ip={{ HOST_IP }}'

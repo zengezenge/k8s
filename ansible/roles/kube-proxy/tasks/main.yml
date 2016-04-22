@@ -1,0 +1,23 @@
+---
+- name: Install kube proxy
+  copy: src=kube-proxy dest=/usr/bin/kube-proxy owner=root group=root mode=0755
+  tags: kube-proxy
+  when: PROXY_RUNNING_MODE == 'Service'
+
+- name: Install kube-proxy default config
+  template: src=kube-proxy.j2 dest=/etc/default/kube-proxy owner=root group=root mode=0644
+  tags: kube-proxy
+  when: PROXY_RUNNING_MODE == 'Service'
+
+- name: Install kube-proxy init
+  template: src=kube-proxy.conf.j2 dest=/etc/init/kube-proxy.conf owner=root group=root mode=0644
+  tags: kube-proxy
+  when: PROXY_RUNNING_MODE == 'Service'
+
+- name: Install kube-proxy init.d
+  template: src=kube-proxy.sh.j2 dest=/etc/init.d/kube-proxy owner=root group=root mode=0644
+  tags: kube-proxy
+  when: PROXY_RUNNING_MODE == 'Service'
+
+- name: Start kube-proxy service
+  service: name=kube-proxy state=restarted

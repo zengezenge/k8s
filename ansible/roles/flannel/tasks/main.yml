@@ -1,0 +1,31 @@
+---
+- name: Install flanneld
+  copy: src=flanneld dest=/usr/bin/flanneld owner=root group=root mode=0755
+  tags: flannel
+
+- name: Install flanneld init
+  template: src=flanneld.conf.j2 dest=/etc/init/flanneld.conf owner=root group=root mode=0644
+  tags: flannel
+
+- name: Install flanneld init.d
+  template: src=flanneld.sh.j2 dest=/etc/init.d/flannel owner=root group=root mode=0644
+  tags: flannel
+
+- name: Register flanneld network into etcd
+  shell: curl -L {{ FLANNEL_ETCD_ENDPOINTS[0] }}/v2/keys{{ FLANNEL_ETCD_CONFIG }} -XPUT -d 'value={"Network":"{{ FLANNEL_NETWORK }}"}'
+
+- name: Start flanneld service
+  service: name=flanneld state=restarted
+
+- name: Fetch flannel subnet environment(FLANNEL_SUBNET)
+  shell : cat /run/flannel/subnet.env | grep FLANNEL_SUBNET= | sed s/FLANNEL_SUBNET=//
+  register: Fetch1
+
+- name: Fetch flannel subnet environment(FLANNEL_MTU)
+  shell : cat /run/flannel/subnet.env | grep FLANNEL_MTU= | sed s/FLANNEL_MTU=//
+  register: Fetch2
+
+- name: Register flannel subnet environment
+  set_fact:
+    FLANNEL_SUBNET: "{{ Fetch1.stdout }}"
+    FLANNEL_MTU: "{{ Fetch2.stdout }}"

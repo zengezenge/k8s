@@ -1,0 +1,3 @@
+---
+- name: Load etcd image
+  shell: docker load -i "{{ IMAGE_PATH }}/{{ ETCD_IMAGE_FILE }}"

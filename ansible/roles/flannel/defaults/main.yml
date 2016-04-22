@@ -1,0 +1,13 @@
+---
+FLANNEL_PATH: '/usr/bin'
+FLANNEL_PIDFILE: '/var/run/flanneld.pid'
+FLANNEL_LOGFILE: '/var/log/flanneld.log'
+FLANNEL_ETCD: 'etcd'
+FLANNEL_ETCD_PREFIX: '/kubernete.com/network'
+FLANNEL_ETCD_CONFIG: "{{ FLANNEL_ETCD_PREFIX }}/config"
+FLANNEL_NETWORK: '10.0.0.0/16'
+FLANNEL_OPTS: "--etcd-endpoints=http://192.168.0.140:2379 --etcd-prefix={{ FLANNEL_ETCD_PREFIX }} --iface=eth1"
+FLANNEL_ETCD_ENDPOINTS:
+  - 'http://192.168.0.140:2379'
+  - 'http://192.168.0.141:2379'
+  - 'http://192.168.0.142:2379'

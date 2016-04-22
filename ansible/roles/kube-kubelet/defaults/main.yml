@@ -1,0 +1,9 @@
+---
+IMAGE_PATH: '/vagrant/images'
+KUBELET_PATH: '/usr/bin'
+KUBELET_LOGPATH: '/var/log/kubelet/'
+KUBELET_LOGFILE: "{{ KUBELET_LOGPATH }}/kubelet.log"
+KUBELET_CONFIG_PATH: '/etc/kubelet.d'
+KUBELET_OPTS:
+  LOG-DIR: '--log-dir={{ KUBELET_LOGPATH }}'
+KUBELET_PAUSE_IMAGE_FILE: 'gcr.io~google_containers~pause_2.0.tar'

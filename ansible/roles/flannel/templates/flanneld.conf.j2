@@ -1,0 +1,27 @@
+description "Flannel service"
+author "@chenxingyu"
+
+respawn
+
+start on startup
+stop on shutdown
+
+pre-start script
+	FLANNEL={{ FLANNEL_PATH }}/$UPSTART_JOB
+	if [ -f /etc/default/$UPSTART_JOB ]; then
+		. /etc/default/$UPSTART_JOB
+	fi
+	if [ -f $FLANNEL ]; then
+		exit 0
+	fi
+    exit 22
+end script
+
+script
+	FLANNEL={{ FLANNEL_PATH }}/$UPSTART_JOB
+	FLANNEL_OPTS="{{ FLANNEL_OPTS }}"
+	if [ -f /etc/default/$UPSTART_JOB ]; then
+		. /etc/default/$UPSTART_JOB
+	fi
+	exec "$FLANNEL" $FLANNEL_OPTS > {{ FLANNEL_LOGFILE }} 2>&1
+end script

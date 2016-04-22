@@ -1,0 +1,15 @@
+---
+MASTER_VERSION: '1.2'
+MASTER_APISERVER_IMAGE_FILE: 'kube-apiserver_{{ MASTER_VERSION }}.tar'
+MASTER_CONTROLLER_MANAGER_IMAGE_FILE: 'kube-controller-manager_{{ MASTER_VERSION }}.tar'
+MASTER_SCHEDULER_IMAGE_FILE: 'kube-scheduler_{{ MASTER_VERSION }}.tar'
+MASTER_ETCD_SERVERS: 'http://192.168.0.140:2379,http://192.168.0.141:2379,http://192.168.0.142:2379'
+IMAGE_PATH: '/vagrant/images'
+MASTER_RUNNING_MODE: 'StaticPod'
+MASTER_RESTARTPOLICY: 'Always'
+HOST_IP: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+MASTER_API_PORT: 8080
+MASTER_CERT_PATH: '/vagrant/certs'
+MASTER_AUTH_PATH: '/vagrant/auths'
+MASTER_CERT_NAME: 'apiserver'
+

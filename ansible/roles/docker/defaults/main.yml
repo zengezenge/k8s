@@ -1,0 +1,7 @@
+---
+DOCKER_OPTS:
+   HOST: '--host=tcp://127.0.0.1:2375 --host=unix:///var/run/docker.sock'
+   INSECURE_REGISTRY: '--insecure-registry=192.168.0.100:5000'
+   REGISTRY_MIRROR: '--registry-mirror=http://192.168.0.100:5000'
+   BIP: '--bip=172.17.0.1/24'
+   MTU: '--mtu=1472'
